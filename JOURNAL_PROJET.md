@@ -33,15 +33,15 @@
 | 1 | Présenter le problème, son intérêt, les objectifs | ⬜ À faire |
 | 2 | Décrire le signal (grandeur, unité, durée, Fe, nb d'échantillons) | ⬜ À faire |
 | 3 | Décrire matériel, logiciel, source des données, protocole | ⬜ À faire |
-| 4 | Fournir les données brutes (CSV), **fichiers distincts des données filtrées** | ⬜ À faire |
+| 4 | Fournir les données brutes (CSV), **fichiers distincts des données filtrées** | 🟡 Brutes faites (`data/raw/`), traitées à faire |
 | 5 | Visualiser le signal brut (temporel + fréquentiel si pertinent) | ⬜ À faire |
 | 6 | Identifier perturbations, bruit, caractéristiques | ⬜ À faire |
 | 7 | Appliquer ≥ 1 méthode de traitement du cours, justifier les paramètres | ⬜ À faire |
 | 8 | Comparer avant/après (graphiques + indicateurs) | ⬜ À faire |
 | 9 | Interpréter, limites, amélioration proposée | ⬜ À faire |
 | S1 | Schéma de câblage | ⬜ À faire |
-| S2 | Code d'acquisition commenté et réexécutable | 🟡 En cours (sketch + notebook prêts, à tester sur la carte) |
-| S3 | 4 situations × 3 répétitions × 10–20 s = 12 CSV | ⬜ À faire |
+| S2 | Code d'acquisition commenté et réexécutable | ✅ Fait (testé sur la carte le 2026-11-21) |
+| S3 | 4 situations × 3 répétitions × 10–20 s = 12 CSV | ✅ Fait (2026-11-21, réserves notées au 2026-11-23) |
 | S4 | Graphiques : titre, axes nommés, unités, légende | ⬜ À faire |
 | S5 | Tableau comparatif des situations | ⬜ À faire |
 
@@ -175,7 +175,7 @@ Légende : ⬜ À faire · 🟡 En cours · ✅ Fait
 - **Cause 2 (notebook)** : quelques anciens échantillons étaient encore « en transit » dans l'USB après `reset_input_buffer()`.
   → **Correction** [01_acquisition.ipynb](notebooks/01_acquisition.ipynb) : purge de 0,5 s après le décompte ; ajout d'un **contrôle automatique de validité** (alerte si Fe effective hors 100 Hz ± 2 % ou échantillons manquants).
 - **Observation physique intéressante** (malgré l'essai invalide) : X ≈ 0,978 g, Y ≈ 0, Z ≈ −0,22 g → norme ≈ √(0,978² + 0,22²) ≈ **1,00 g** : le capteur mesure bien la gravité seule. Le capteur n'était pas à plat : l'axe X était presque vertical (inclinaison ≈ 13° par rapport à la verticale). → L'orientation de repos doit être fixée et documentée dans le protocole.
-- **En attente de décision** : sort du fichier invalide `immobile_rep1.csv` (la règle interdit d'écraser un fichier brut).
+- ~~En attente de décision~~ → fichier plus disponible ; l'essai invalide suivant (12/11) est dans `data/raw/rejets/`.
 
 ### 2026-11-20 — Analyse de l'enregistrement du 12/11 (`immobile_rep1.csv`) : toujours une rafale au départ
 - **Constat du chef de projet** : « l'enregistrement part trop vite après le décompte ».
@@ -280,8 +280,8 @@ Légende : ⬜ À faire · 🟡 En cours · ✅ Fait
   - a_y ≈ 0 la plupart du temps (axe de rotation), sauf pics jusqu'à +0,35 g vers 12–13 s (doigts sur le câble) ;
   - angle dans le plan XZ : 0° → **≈ 195°** (léger dépassement) → ≈ −10°.
 - **Déroulé réel vs consignes** : 90° atteint à ≈ 5 s (prévu 4 s), 180° à ≈ 8 s (prévu 6 s), maintien très court (8–9 s au lieu de 6–8 s), retour à 0° vers 13,5 s (prévu 12 s) → environ **1 à 2 s de retard** sur le guide, vitesse moins régulière.
-- **Perturbations** : oscillations de la plaque suspendue au câble (effet **pendule**), visibles sur \|a\| (0,87 à 1,16 g) au début et à la fin.
-- **En attente de décision** : garder le guide actuel (A) ou l'adapter au rythme réel de rep1 (B).
+- **Perturbations** : oscillations de la plaque suspendue au câble (effet **pendule** — *hypothèse non vérifiée, voir 2026-11-23*), visibles sur \|a\| (0,87 à 1,16 g) au début et à la fin.
+- ~~En attente de décision~~ → essais terminés avec le guide actuel (A), voir 2026-11-23.
 
 ### 2026-11-21 — Protocole de la situation 4 « petites oscillations »
 - **Geste** : plaque posée sur une feuille de papier ; deux traits à **3 cm** l'un de l'autre ; le **bord avant** de la plaque va du trait 1 au trait 2 et revient, dans la direction du câble (**axe Y**), sans soulever ni tourner la plaque.
@@ -301,7 +301,110 @@ Légende : ⬜ À faire · 🟡 En cours · ✅ Fait
 - **Après un passe-bas à 3 Hz** (Butterworth ordre 4, test exploratoire, pas encore la méthode retenue) : on voit nettement le va-et-vient ; amplitude ≈ **±0,04 g** (théorie ≈ 0,06 g pour 3 cm à 1 Hz → même ordre de grandeur).
 - **Spectre (FFT de a_y, 2–15 s)** : pic à **1,23 Hz** (rythme réel du va-et-vient, plus rapide que 1 Hz) et pic à **≈ 0,4 Hz** (rythme irrégulier : le mouvement se répète par paquets d'environ 2,5 s) ; le mouvement commence vers 1,2 s au lieu de 2 s.
 - **Hypothèse** : l'affichage ALLER/RETOUR dans VS Code peut arriver par à-coups (sortie du notebook mise en tampon) → rythme difficile à suivre.
-- **En attente de décision** : garder rep1 ou la refaire ; moyen de mieux tenir le rythme (métronome Google dans le navigateur, compter à voix haute…).
+- ~~En attente de décision~~ → rep1 refaite par le chef de projet (19:26), voir 2026-11-23. **L'interprétation du spectre ci-dessus est erronée : corrigée au 2026-11-23.**
+
+### 2026-11-23 — Bilan des 12 enregistrements et corrections
+- **Décision du chef de projet** : acquisitions terminées, on passe à la suite. Rotation réalisée **à la main** (demi-tour 180° aller-retour).
+- **Contrôle des 12 fichiers** : 1 500 échantillons chacun, aucune valeur absente, aucune saturation (±2 g), aucun doublon. Fe = 100,00 Hz et 0 manquant pour 10 fichiers ; `oscillations_rep2` (trous à 7,46 et 10,22 s) et `oscillations_rep3` (8,62 et 13,39 s) : **2 échantillons manquants** chacun, Fe moyenne 99,87 Hz.
+
+| Rotation | départ (a_x ; a_z) | angle max | angle final | σ de a_y (mg) |
+|---|---|---|---|---|
+| rep1 (19:03) | 0,98 ; −0,21 g | 195° | −1° | 44 |
+| rep2 (19:04) | 0,92 ; −0,37 g | 174° | **−16°** | **91** (axe moins horizontal) |
+| rep3 (19:06) | 0,98 ; −0,23 g | 191° | 3° | 39 |
+
+| Oscillations | fondamentale de a_y | amplitude du fondamental | course équivalente (si sinusoïdal) | harmonique dominant |
+|---|---|---|---|---|
+| rep1 (19:26) | 0,48 Hz | 22 mg | 4,9 cm | 3 f₀ (23 % de la puissance de f₀) |
+| rep2 (19:27) | 0,61 Hz | 28 mg | 3,7 cm | 3 f₀ (12 %) |
+| rep3 (19:27) | 0,74 Hz | 57 mg | 5,2 cm | faible (≈ 3 %) : presque sinusoïdal |
+
+- **Corrections d'analyses antérieures (erreurs de Claude)** :
+  1. *Oscillations* : le pic à 1,23 Hz de l'essai de 19:21 n'était **pas** le rythme du geste mais l'**harmonique 3** du fondamental à ≈ 0,41 Hz (3 × 0,41 = 1,23). Le geste était donc **plus lent** que 1 Hz, et non plus rapide.
+  2. *Oscillations* : l'accord « ±0,04 g mesuré / 0,06 g théorique » n'est pas valable (la théorie supposait 1 Hz). À 0,41 Hz, A = 1,5 cm donnerait ≈ 0,010 g.
+  3. *Échantillons manquants* : « ligne corrompue » n'est pas établi. Une ligne ignorée peut aussi être le message `# Lecture MPU echouee` (contact I²C, fils qui bougent pendant le glissement) ; le notebook ne conserve pas le texte des lignes ignorées.
+  4. *Rotation* : l'« effet pendule » (plaque suspendue au câble) était une supposition ; constat réel = tremblements de la main.
+  5. *Immobile* : `immobile_rep1` contient un **choc à t = 14,19 s** (a_y = −0,125 g), non signalé. Sans lui, σ_y = 2,2 mg au lieu de 4,6, comme rep2 et rep3.
+  6. *Cadence* : les 6 écarts irréguliers sont **3 retards suivis d'un rattrapage** (+2, +3, +4 ms vers 0,95, 2,95 et 4,95 s), présents dans tous les fichiers examinés (immobile rep1, rotation rep1, oscillations ×3) ; cause non identifiée, sans dérive cumulée.
+- **Réserves à discuter dans le rapport** :
+  - « immobile » a été fait **Z vers le haut**, les 3 autres situations partent **X vers le haut** (≈ 0,92 à 1,0 g) ;
+  - oscillations : 1 Hz visé, 0,48 / 0,61 / 0,74 Hz obtenus → répétitions non identiques ;
+  - inclinaison et rotation : rythme variable d'une répétition à l'autre, rotation rep2 moins bien maîtrisée.
+- **Précisions du chef de projet** :
+  - course réelle du glissement : **3 cm ± 0,5 cm** ;
+  - orientation : le sujet n'impose aucun axe, chaque situation a été réalisée avec **l'axe matériellement faisable** (capteur sur plaque d'essai, câble USB).
+- **Conséquences pour l'analyse** :
+  - amplitude théorique (sinus, A = 1,5 ± 0,25 cm) : 14 / 22 / 33 mg (± 17 %) pour 0,48 / 0,61 / 0,74 Hz, contre 22 / 28 / 57 mg mesurés : la mesure dépasse la théorie. Hypothèses à discuter : geste non sinusoïdal, légère inclinaison de la plaque pendant le glissement (1° ajoute ≈ 17 mg de gravité sur l'axe) ;
+  - les orientations étant différentes, on ne compare pas les **moyennes axe par axe** entre situations, mais des indicateurs de variation (écart-type, étendue) et la norme.
+- **Constat** : le dossier est maintenant un dépôt git (commit `03515ed`).
+
+### 2026-11-23 — Liste des tâches d'analyse (proposition, rien n'est démarré)
+- **Consigne de l'enseignant** : mettre en œuvre les traitements, tester les paramètres et comparer les résultats ; tracer les trois axes, calculer éventuellement la norme, comparer les situations, appliquer un filtre de lissage ou passe-bas, comparer avant/après.
+
+| # | Tâche | Origine | Statut |
+|---|-------|---------|--------|
+| T0 | Préparer les données : charger les 12 CSV, combler les échantillons manquants (oscillations rep2, rep3) sans modifier les bruts | Nécessaire avant filtrage | 🟡 |
+| T1 | Tracer X, Y, Z pour chaque situation (3 répétitions) | Projet 5 | 🟡 2/4 (immobile, inclinaison) |
+| T2 | Calculer et tracer la norme | Projet 5 (éventuellement) | 🟡 2/4 (immobile, inclinaison) |
+| T3 | Tracer le spectre (FFT) pour repérer signal utile et bruit | Consigne commune 5 (« lorsque pertinent ») | 🟡 2/4 (immobile, inclinaison) |
+| T4 | Identifier bruit et perturbations (chocs, tremblements, frottements) | Consigne commune 6 | 🟡 2/4 (immobile, inclinaison) |
+| T5 | Appliquer le(s) filtre(s) et tester plusieurs paramètres | Projet 5 + consigne 7 | 🟡 2/4 (immobile, inclinaison) |
+| T6 | Comparer avant/après : graphiques + indicateurs | Projet 5 + consigne 8 | 🟡 2/4 (immobile, inclinaison) |
+| T7 | Comparer les 4 situations : tableau comparatif | Projet 5 (livrable) | ⬜ |
+| T8 | Enregistrer les données traitées dans `data/processed/` | Élément à remettre | ⬜ |
+| T9 | Interpréter, limites, amélioration | Consigne commune 9 | ⬜ |
+
+- **Décisions du chef de projet** :
+  - liste de tâches acceptée, traitée **situation par situation** ;
+  - **les deux filtres** sont testés l'un après l'autre (moyenne glissante, puis passe-bas Butterworth) ;
+  - code rédigé **bloc par bloc** ; à la fin de chaque partie, le chef de projet **propose** l'interprétation (markdown), Claude la **corrige et l'améliore**.
+
+### 2026-11-23 — Notebook d'analyse : situation 1, bloc 1
+- **Ajout** : [notebooks/02_analyse.ipynb](notebooks/02_analyse.ipynb), bloc 1 (T0) : imports, fonction `charger(situation)`, chargement et vérification des 3 essais « immobile ». Code exécuté sans erreur sur les données réelles.
+- **Réorganisation** (accord du chef de projet) : une section « Outils » (fonctions écrites une seule fois), puis une section par situation.
+- **Ajout** bloc 2 (T1) : fonction `tracer_axes`, grille 3 axes × 3 répétitions, appliquée à « immobile ». Testée sur les données réelles.
+- **Décision du chef de projet** : enregistrer tous les graphiques avec des noms explicites → dossier `figures/`, format `<situation>_<contenu>.png` (150 dpi). Un graphique réexécuté remplace l'image précédente. Premier fichier : `figures/immobile_axes_bruts.png`.
+- **Interprétation « immobile » (signaux bruts)** : proposée par le chef de projet, corrigée par Claude, ajoutée au notebook. Corrections : grésillement = surtout bruit du capteur (blanc sur Y, presque blanc sur Z ; plus lent sur X, effet de fixation possible) ; X n'est pas proche de 0 (inclinaison ≈ 10°) ; X diminue mais reste positif ; Y ≈ −0,01 g.
+- **Dérive de X : hypothèse révisée**. Z augmente de +1,7 / +0,8 / +2,0 mg pendant que X perd 4,4 / 6,6 / 12,4 mg. Une rotation lente du capteur prévoit ΔZ ≈ 0,17 × |ΔX| = 0,7 / 1,1 / 2,1 mg : l'accord favorise un **mouvement mécanique de la fixation** plutôt que la dérive thermique évoquée le 21/11 (non prouvé).
+- **Ajout** bloc 3 (T2) : fonctions `ajouter_norme` et `tracer_norme`, appliquées à « immobile » (`figures/immobile_norme_brute.png`). Testées sur les données réelles.
+- **Interprétation « immobile » (norme)** : proposée par le chef de projet, corrigée par Claude, ajoutée au notebook. Corrections : l'écart à 1 g vient de l'offset de Z (ni du bruit ni de l'inclinaison) ; le décalage et la dérive de X ne se voient pas sur la norme, car Z compense (dérive de la norme < 1 mg en 15 s).
+- **Ajout** bloc 4 (T3) : fonctions `spectre` (FFT, moyenne retirée) et `tracer_spectre`, appliquées à « immobile » (`figures/immobile_spectre_brut.png`). Vérifié avec un sinus connu (2 Hz, amplitude 0,5 → pic à 2 Hz, 0,5).
+- **Interprétation « immobile » (spectres)** : proposée par le chef de projet, corrigée et complétée par Claude, ajoutée au notebook.
+  - Vérifié hors notebook : Y rep1 limité aux 14 premières secondes (sans le choc) redevient plat (médiane ≈ 0,09 mg dans toutes les bandes, comme rep2 et rep3) → la forme bombée vient bien du choc.
+  - Bosse 5–12 Hz : X ≈ 2,5 à 3,4 fois plus fort que le fond, Z ≈ 1,3 à 1,6, Y ≈ 1,0–1,1 → compatible avec un balancement autour de Y (fixation), non prouvé.
+- **Proposition retirée par Claude** : pas de cellule de vérification séparée (remarque du chef de projet : ne pas rallonger l'analyse). Les moyennes et écarts-types par axe, cités dans les interprétations, seront calculés dans le tableau avant/après filtrage (T6), puis dans le tableau comparatif (T7).
+- **Avancement « immobile »** : T1 (bloc 2), T2 (bloc 3), T3 (bloc 4) et T4 (interprétations, sans code) terminées. À refaire pour les trois autres situations.
+- **Décision du chef de projet** : moyenne glissante testée avec **M = 5, 11 et 21** points (0,05 / 0,11 / 0,21 s ; coupure approximative 8,9 / 4,0 / 2,1 Hz), fenêtres toutes plus courtes que le mouvement le plus rapide (0,74 Hz, soit 1,35 s) ; paramètres à justifier dans le rapport.
+- **Ajout** bloc 5 (T5, T6) : `moyenne_glissante` (centrée, bords vides), `tracer_moyenne_glissante`, `tableau_moyenne_glissante`, appliquées à « immobile » (`figures/immobile_rep1_moyenne_glissante.png`). Vérifié sur l'exemple 0, 0, 9, 0, 0 (M = 3 → 3, 3, 3). Phrase sur le bruit de l'interprétation « signaux bruts » ajustée pour correspondre au tableau (écarts-types globaux).
+- **Interprétation « immobile » (moyenne glissante)** : proposée par le chef de projet, corrigée par Claude, ajoutée au notebook. Points clés : bruit de Y divisé par ≈ √M (bruit blanc) ; la dérive de X reste (passe-bas sans effet sur le lent) ; choc atténué et étalé ; M = 21 provisoire pour « immobile », à vérifier sur les autres situations.
+- **Décision du chef de projet** : passe-bas Butterworth **ordre 4 (fixe)**, **fc = 4 et 2 Hz** seulement, pour limiter le nombre de graphiques ; l'ordre n'est pas varié. Justification de fc : entre le mouvement le plus rapide (composantes jusqu'à ≈ 2,2 Hz) et les vibrations (à partir de ≈ 5 Hz).
+- **Ajout** bloc 6 (T5, T6) : `passe_bas` (Butterworth, aller-retour sans retard), `tracer_passe_bas`, `tableau_passe_bas`, appliquées à « immobile » (`figures/immobile_rep1_passe_bas.png`). Gain vérifié sur des sinus connus (50 % à fc).
+- **Interprétation « immobile » (passe-bas)** : proposée par le chef de projet, corrigée par Claude, ajoutée au notebook. Points clés : moins de bruit quand fc diminue ; dérive conservée ; choc fortement atténué ; plongeon de Z vers 15 s = **effet de bord** (vérifié : en retirant les derniers points, la fin du signal filtré suit toujours la dernière valeur brute). **fc = 4 Hz** jugée la plus prudente par le chef de projet, à vérifier sur les oscillations.
+- **Ajout** bloc 7 (T6) : `comparer_filtres` (M = 11 / fc = 4 Hz et M = 21 / fc = 2 Hz), appliquée à « immobile », avec interprétation (avis du chef de projet : « proches, Butterworth plus fin », corrigé et complété). Résultat : Butterworth devant dans 9 cas sur 9 vers 4 Hz ; partagé vers 2 Hz ; écart en partie dû à une coupure effective plus basse (3,6 et 1,8 Hz après deux passages, contre 4,0 et 2,1 Hz).
+- **Situation 1 « immobile » : analyse terminée** (T1 à T6), sous réserve de relecture par le chef de projet. Prochaine étape : situation 2 (inclinaison).
+
+### 2026-11-23 — Notebook d'analyse : situation 2, inclinaison
+- **Demande du chef de projet** : écrire d'un coup tous les blocs de la situation 2 ; il exécute, puis propose l'interprétation de chaque bloc.
+- **Ajout** dans [02_analyse.ipynb](notebooks/02_analyse.ipynb) : chargement, axes, norme, spectre, moyenne glissante, passe-bas, comparaison, avec une case « Interprétation (à compléter) » après chaque bloc. 5 graphiques `figures/inclinaison_*.png`. Notebook complet exécuté sans erreur.
+- **Deux fonctions modifiées** (résultats d'« immobile » inchangés, sauf les marges horizontales du spectre) :
+  - `tracer_spectre` : paramètre `fmax` (affichage 0–3 Hz pour l'inclinaison) ;
+  - `comparer_filtres` : paramètres `debut` et `fin`. Sur un signal avec mouvement, l'écart-type global mesure le mouvement (≈ 500 mg sur X) et non le bruit ; il est donc calculé pendant le maintien (9–11 s). Limite : dans rep3, X bouge encore lentement pendant cette phase (σ brut ≈ 10 mg).
+- Les tableaux `tableau_moyenne_glissante` et `tableau_passe_bas` (σ global) ne sont pas utilisés pour l'inclinaison, pour la même raison.
+
+### 2026-11-24 — Inclinaison : interprétation des signaux bruts
+- Proposée par le chef de projet, corrigée et complétée par Claude, ajoutée au notebook.
+- **Mesures de contrôle** (hors notebook) : montée 4,1 / 3,8 / 5,5 s ; maintien 3,4 / 4,8 / 2,9 s ; retour 2,8 / 2,6 / 3,3 s ; Z pointe vers le bas quand X = 0 (Z minimal ≈ −0,97 g), puis dépassement d'environ 20°.
+- **Angle parcouru précisé** : 94,1 / 94,2 / 95,2° sans correction (entre les paliers de départ et de maintien) ; **91,0 / 91,0 / 92,1°** si on retire le décalage de Z (0,042 g, estimé sur « immobile »). Les 94–96° notés le 21/11 étaient des maxima, sans correction du décalage.
+- **Décision du chef de projet** : limiter le volume d'interprétation (« 3 max »). Appliqué à partir de l'inclinaison : **3 points au maximum par interprétation**, et les trois parties du filtrage (moyenne glissante, passe-bas, comparaison) regroupées en **une seule** interprétation. Graphiques et code inchangés. Interprétation des signaux bruts de l'inclinaison raccourcie ; celles d'« immobile » non modifiées.
+- **Interprétation « inclinaison » (norme)** : proposée par le chef de projet, corrigée par Claude, ajoutée au notebook (1,00 → 0,96 g : décalage de Z).
+- **Interprétation « inclinaison » (spectres)** : proposée par le chef de projet, corrigée par Claude, ajoutée au notebook (mouvement sous ≈ 0,5 Hz ; conservé par fc = 2 et 4 Hz).
+- **Interprétation « inclinaison » (filtrage)** : proposée en partie par le chef de projet, complétée par Claude, ajoutée au notebook. X rep3 pendant 9–11 s : moyennes par demi-seconde −0,330 / −0,345 / −0,354 / −0,341 g → mouvement lent de la main, pas du bruit ; la fenêtre 9–11 s n'est donc pas parfaitement calme pour cet axe et cette répétition.
+- **Situation 2 « inclinaison » : analyse terminée** (T1 à T6), sous réserve de relecture par le chef de projet.
+
+### 2026-11-24 — Notebook d'analyse : situation 3, rotation
+- **Ajout** dans [02_analyse.ipynb](notebooks/02_analyse.ipynb) : tous les blocs de la rotation, avec **3 interprétations** (signaux bruts et norme ; spectres ; filtrage). 6 graphiques `figures/rotation_*.png`. Notebook complet exécuté sans erreur.
+- **Indicateur de comparaison** (bloc 8, à valider par le chef de projet) : aucune phase calme commune aux 3 répétitions (rep2 bouge dès le début) → **rugosité** = écart-type de la différence entre deux mesures successives (`comparer_rugosite`).
+- **Modification** : `tracer_spectre` accepte `fmin` (zoom 2–20 Hz sur les tremblements de la main, invisibles à côté du mouvement).
 
 ---
 
@@ -312,7 +415,9 @@ Légende : ⬜ À faire · 🟡 En cours · ✅ Fait
 | `JOURNAL_PROJET.md` | Journal de bord du projet | Actif |
 | `test_mpu/test_mpu.ino` | Sketch d'acquisition MPU-6050 sur ESP32-C3 (100 Hz, ±2 g, CSV) | Modifié le 2026-11-21 (`FS_HZ = 100`) |
 | `notebooks/01_acquisition.ipynb` | Collecte série → CSV bruts + contrôle qualité | Modifié le 2026-11-21 (lecture continue pendant le décompte) |
-| `data/raw/` | Données brutes (jamais modifiées) | 6/12 essais valides (immobile ×3, inclinaison ×3) ; rotation_rep1 non conforme |
+| `notebooks/02_analyse.ipynb` | Analyse situation par situation | Créé le 2026-11-23, en cours |
+| `figures/` | Graphiques enregistrés par les notebooks (PNG) | 16 graphiques |
+| `data/raw/` | Données brutes (jamais modifiées) | **12/12 essais enregistrés** (oscillations rep2 et rep3 : 2 échantillons manquants chacune) |
 | `data/raw/journal_acquisitions.csv` | Registre de toutes les acquisitions (y compris rejetées) | Actif |
 | `data/raw/rejets/immobile_rep1_rafale.csv` | Essai invalide du 12/11 (rafale au départ), gardé comme trace | Rejeté |
 
